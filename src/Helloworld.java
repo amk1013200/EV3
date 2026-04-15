@@ -36,7 +36,7 @@ public class HelloWorld {
 
         float threshold = 0.4f; // adjust based on your testing
 
-        // 🔵 Bluetooth
+        //  Bluetooth
         LCD.drawString("Waiting BT...", 0, 0);
 
         BTConnector btc = new BTConnector();
@@ -51,7 +51,7 @@ public class HelloWorld {
 
         while (!Button.ESCAPE.isDown()) {
 
-            // 🔵 RECEIVE COMMANDS
+            //  RECEIVE COMMANDS
             if (dis.available() > 0) {
                 String cmd = dis.readUTF();
 
@@ -78,13 +78,13 @@ public class HelloWorld {
                 }
             }
 
-            // 🔴 STOP MODE
+            // STOP MODE
             if (mode.equals("STOP")) {
                 leftMotor.stop(true);
                 rightMotor.stop(true);
             }
 
-            // 🟢 AUTO MODE (LINE + OBSTACLE)
+            //  AUTO MODE (LINE + OBSTACLE)
             else if (mode.equals("AUTO")) {
 
                 // Read sensors
@@ -94,7 +94,7 @@ public class HelloWorld {
                 float dist = distSample[0];
                 float lightValue = lightSample[0];
 
-                // 🚧 Obstacle detection FIRST
+                //  Obstacle detection FIRST
                 if (dist < 0.2) {
                     leftMotor.stop(true);
                     rightMotor.stop(true);
@@ -106,7 +106,7 @@ public class HelloWorld {
                     rightMotor.rotate(-200);
                 } 
                 else {
-                    // 👇 SIMPLE LINE FOLLOWING
+                    //  SIMPLE LINE FOLLOWING
 
                     if (lightValue < threshold) {
                         // On black line → straight
