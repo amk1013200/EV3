@@ -12,19 +12,17 @@ import lejos.remote.nxt.BTConnector;
 import lejos.remote.nxt.NXTConnection;
 
 import java.io.DataInputStream;
+
 public class HelloWorld {
 
     public static void main(String[] args) throws Exception {
-        LCD.drawString("START", 0, 0);
-Delay.msDelay(2000);
 
-        
+        LCD.drawString("START", 0, 0);
+        Delay.msDelay(2000);
+
         EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.B);
 
-        Delay.msDelay(1000);
-
-    
         EV3UltrasonicSensor us = new EV3UltrasonicSensor(SensorPort.S1);
         EV3ColorSensor colorSensor = new EV3ColorSensor(SensorPort.S4);
 
@@ -54,24 +52,25 @@ Delay.msDelay(2000);
             if (dis.available() > 0) {
                 String cmd = dis.readUTF();
 
-                 if (cmd.equals("AUTO")) {
+                if (cmd.equals("AUTO")) {
                     mode = "AUTO";
                     LCD.clear();
                     LCD.drawString("Mode: AUTO", 0, 0);
                 }
-
                 else if (cmd.equals("MANUAL")) {
                     mode = "MANUAL";
                     LCD.clear();
                     LCD.drawString("Mode: MANUAL", 0, 0);
                 }
-
                 else if (cmd.equals("STOP")) {
                     mode = "STOP";
                     LCD.clear();
                     LCD.drawString("Mode: STOP", 0, 0);
-            
-                else if (mode.equals("MANUAL")) {
+                }
+
+                // MANUAL control
+                if (mode.equals("MANUAL")) {
+
                     if (cmd.equals("W")) {
                         leftMotor.forward();
                         rightMotor.forward();
@@ -137,6 +136,5 @@ Delay.msDelay(2000);
         rightMotor.close();
         us.close();
         colorSensor.close();
-    }
     }
 }
