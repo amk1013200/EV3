@@ -6,20 +6,18 @@ import lejos.utility.Delay;
 
 public class MotorTest {
     public static void main(String[] args) {
-        // creating motor objects
+        
         EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.A);
         EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.B);
 
         System.out.println("motor test starting...");
 
-        // move motors forward
-        leftMotor.setSpeed(360);   // degrees per second
+        
+        leftMotor.setSpeed(360);   
         rightMotor.setSpeed(360);
         leftMotor.forward();
         rightMotor.forward();
-        Delay.msDelay(2000);       // 2 secs
-
-        // Move motors backward
+        Delay.msDelay(2000
         leftMotor.backward();
         rightMotor.backward();
         Delay.msDelay(2000);       
