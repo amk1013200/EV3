@@ -135,6 +135,6 @@ public class HelloWorld {
         leftMotor.close();
         rightMotor.close();
         us.close();
-        colorSensor.close();
+           colorSensor.close();  
     }
 }
