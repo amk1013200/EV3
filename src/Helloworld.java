@@ -76,7 +76,7 @@ public class HelloWorld {
 
         // FIXED: safer connection method
        NXTConnection conn =
-        btc.waitForConnection(0, NXTConnection.PACKET);
+        btc.waitForConnection(0, NXTConnection.LCP);
 
         LCD.clear();
         LCD.drawString("BT Connected!", 0, 0);
