@@ -42,7 +42,7 @@ public class HelloWorld {
         float[] distSample = new float[distance.sampleSize()];
         float[] lightSample = new float[light.sampleSize()];
 
-        float threshold = 0.55f;
+        float threshold = 0.35f;  
 
         String mode = "AUTO";
 
@@ -78,7 +78,7 @@ public class HelloWorld {
             if (mode.equals("AUTO")) {
 
                 if (dist < 0.20f) {
-
+                
                     Sound.beep();
 
                     leftMotor.stop(true);
@@ -93,21 +93,37 @@ public class HelloWorld {
                     rightMotor.rotate(-180);
 
                 } else {
-
+                
+                    leftMotor.setSpeed(baseSpeed);
+                    rightMotor.setSpeed(baseSpeed);
                     leftMotor.forward();
                     rightMotor.forward();
 
-                    if (lightValue > threshold) {
-                        leftMotor.setSpeed(120);
-                        rightMotor.setSpeed(180);
+            
+                    if (lightValue < threshold) {
+                        
+                        if (lightValue < 0.20f) {
+                            
+                            leftMotor.setSpeed(baseSpeed);
+                            rightMotor.setSpeed(baseSpeed);
+                        } else if (lightValue < 0.30f) {
+                        
+                            leftMotor.setSpeed(150);
+                            rightMotor.setSpeed(baseSpeed);
+                        } else {
+                            
+                            leftMotor.setSpeed(120);
+                            rightMotor.setSpeed(baseSpeed);
+                        }
                     } else {
-                        leftMotor.setSpeed(baseSpeed);
-                        rightMotor.setSpeed(baseSpeed);
+                    
+                        leftMotor.setSpeed(100);
+                        rightMotor.setSpeed(100);
                     }
                 }
             }
             else {
-
+                // MANUAL MODE
                 if (Button.UP.isDown()) {
                     leftMotor.setSpeed(baseSpeed);
                     rightMotor.setSpeed(baseSpeed);
