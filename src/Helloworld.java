@@ -15,18 +15,13 @@ public class HelloWorld {
 
     public static void main(String[] args) throws Exception {
 
-        LCD.clear();
-        LCD.drawString("START", 0, 0);
-        Delay.msDelay(2000);
-
-    
         EV3LargeRegulatedMotor leftMotor =
                 new EV3LargeRegulatedMotor(MotorPort.A);
 
         EV3LargeRegulatedMotor rightMotor =
                 new EV3LargeRegulatedMotor(MotorPort.B);
 
-        int baseSpeed = 180;
+        int baseSpeed = 140;  
 
         EV3UltrasonicSensor us =
                 new EV3UltrasonicSensor(SensorPort.S1);
@@ -34,37 +29,34 @@ public class HelloWorld {
         EV3ColorSensor colorSensor =
                 new EV3ColorSensor(SensorPort.S2);
 
-        Delay.msDelay(500);
-
         SampleProvider distance = us.getDistanceMode();
         SampleProvider light = colorSensor.getRedMode();
 
         float[] distSample = new float[distance.sampleSize()];
         float[] lightSample = new float[light.sampleSize()];
 
-        float threshold = 0.35f;  
+    
+        LCD.clear();
+        LCD.drawString("Put on WHITE", 0, 0);
+        Button.waitForAnyPress();
 
-        String mode = "AUTO";
+        light.fetchSample(lightSample, 0);
+        float white = lightSample[0];
 
         LCD.clear();
-        LCD.drawString("MODE: AUTO", 0, 0);
+        LCD.drawString("Put on BLACK", 0, 0);
+        Button.waitForAnyPress();
+
+        light.fetchSample(lightSample, 0);
+        float black = lightSample[0];
+
+        float threshold = (white + black) / 2;
+
+        LCD.clear();
+        LCD.drawString("Ready", 0, 0);
+        Delay.msDelay(1000);
 
         while (!Button.ESCAPE.isDown()) {
-
-        
-            if (Button.UP.isDown()) {
-                mode = "MANUAL";
-                LCD.clear();
-                LCD.drawString("MODE: MANUAL", 0, 0);
-                Delay.msDelay(300);
-            }
-
-            if (Button.DOWN.isDown()) {
-                mode = "AUTO";
-                LCD.clear();
-                LCD.drawString("MODE: AUTO", 0, 0);
-                Delay.msDelay(300);
-            }
 
             distance.fetchSample(distSample, 0);
             light.fetchSample(lightSample, 0);
@@ -72,91 +64,42 @@ public class HelloWorld {
             float dist = distSample[0];
             float lightValue = lightSample[0];
 
-            LCD.drawString("Dist: " + (int)(dist * 100) + "cm   ", 0, 2);
-            LCD.drawString("Light: " + (int)(lightValue * 100) + "%   ", 0, 3);
-
-            if (mode.equals("AUTO")) {
-
-                if (dist < 0.20f) {
-                
-                    Sound.beep();
-
-                    leftMotor.stop(true);
-                    rightMotor.stop(true);
-
-                    Delay.msDelay(300);
-
-                    leftMotor.setSpeed(150);
-                    rightMotor.setSpeed(150);
-
-                    leftMotor.rotate(180, true);
-                    rightMotor.rotate(-180);
-
-                } else {
-                
-                    leftMotor.setSpeed(baseSpeed);
-                    rightMotor.setSpeed(baseSpeed);
-                    leftMotor.forward();
-                    rightMotor.forward();
+            LCD.drawString("D:" + (int)(dist*100) + "cm   ", 0, 2);
+            LCD.drawString("L:" + (int)(lightValue*100) + "%   ", 0, 3);
 
             
-                    if (lightValue < threshold) {
-                        
-                        if (lightValue < 0.20f) {
-                            
-                            leftMotor.setSpeed(baseSpeed);
-                            rightMotor.setSpeed(baseSpeed);
-                        } else if (lightValue < 0.30f) {
-                        
-                            leftMotor.setSpeed(150);
-                            rightMotor.setSpeed(baseSpeed);
-                        } else {
-                            
-                            leftMotor.setSpeed(120);
-                            rightMotor.setSpeed(baseSpeed);
-                        }
-                    } else {
-                    
-                        leftMotor.setSpeed(100);
-                        rightMotor.setSpeed(100);
-                    }
-                }
+            if (dist < 0.20f) {
+                Sound.beep();
+
+                leftMotor.stop(true);
+                rightMotor.stop(true);
+
+                Delay.msDelay(200);
+
+                leftMotor.rotate(180, true);
+                rightMotor.rotate(-180);
+
+                continue;
             }
-            else {
-                // MANUAL MODE
-                if (Button.UP.isDown()) {
-                    leftMotor.setSpeed(baseSpeed);
-                    rightMotor.setSpeed(baseSpeed);
-                    leftMotor.forward();
-                    rightMotor.forward();
-                }
 
-                else if (Button.DOWN.isDown()) {
-                    leftMotor.setSpeed(baseSpeed);
-                    rightMotor.setSpeed(baseSpeed);
-                    leftMotor.backward();
-                    rightMotor.backward();
-                }
+    
+            float error = lightValue - threshold;
 
-                else if (Button.LEFT.isDown()) {
-                    leftMotor.setSpeed(120);
-                    rightMotor.setSpeed(180);
-                    leftMotor.backward();
-                    rightMotor.forward();
-                }
+            int turn = (int)(error * 400); 
 
-                else if (Button.RIGHT.isDown()) {
-                    leftMotor.setSpeed(180);
-                    rightMotor.setSpeed(120);
-                    leftMotor.forward();
-                    rightMotor.backward();
-                }
+            int leftSpeed  = baseSpeed - turn;
+            int rightSpeed = baseSpeed + turn;
 
-                else {
-                    leftMotor.stop(true);
-                    rightMotor.stop(true);
-                }
-            }
+            if (leftSpeed < 80) leftSpeed = 80;
+            if (rightSpeed < 80) rightSpeed = 80;
+            if (leftSpeed > 200) leftSpeed = 200;
+            if (rightSpeed > 200) rightSpeed = 200;
+
+            leftMotor.setSpeed(leftSpeed);
+            rightMotor.setSpeed(rightSpeed);
+
+            leftMotor.forward();
+            rightMotor.forward();
 
             Delay.msDelay(20);
         }
